@@ -1,5 +1,6 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 class ProductViewSet(viewsets.ViewSet):
     def list(self, request):
@@ -25,3 +26,15 @@ class ProductViewSet(viewsets.ViewSet):
         return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
     def destroy(self, request, pk=None):
+        product = Product.objects.get(id=pk)
+        product.delete()
+        publish('product_deleted', pk)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class UserAPIView(APIView):
+    def get(self, _):
+        users = User.objects.all()
+        user = random.choice(users)
+        return Response({
+            'id': user.id
+        })
